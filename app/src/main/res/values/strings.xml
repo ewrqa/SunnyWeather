@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SunnyWeather</string>
+    <string name="fragment_place_hit">请输入地址</string>
 </resources>
