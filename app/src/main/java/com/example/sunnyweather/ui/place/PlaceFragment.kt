@@ -43,7 +43,7 @@ class PlaceFragment : Fragment(){
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         //获取适配器
-           placeAdapter = PlaceAdapter(this, viewModel.placeList)
+        placeAdapter = PlaceAdapter(this, viewModel.placeList)
         val linearLayoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         recyclerView.layoutManager=linearLayoutManager
         recyclerView.adapter=placeAdapter
@@ -57,14 +57,11 @@ class PlaceFragment : Fragment(){
             }else{
              recyclerView.visibility=View.GONE
              bgImageView.visibility=View.VISIBLE
-             viewModel.placeList.clear()
-            }
+             viewModel.placeList.clear() }
         }
         //当数据产生变化的时候 更新
         viewModel.placeLiveData.observe(viewLifecycleOwner, Observer {
             result->
-
-            Log.d("tag",result.toString())
             //安全的获取结果 防止空指针
             val orNull = result.getOrNull()
             if(orNull!=null) {

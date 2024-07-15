@@ -6,7 +6,7 @@ import android.widget.Toast
 /**
  * <p>项目名称:SunnyWeather</p>
  * <p>包名:com.example.sunnyweather.utils</p>
- * <p>简述:TostUtil</p>
+ * <p>简述:简化TostUtil</p>
  *
  * @author 张凯涛
  * @date 2024/7/15

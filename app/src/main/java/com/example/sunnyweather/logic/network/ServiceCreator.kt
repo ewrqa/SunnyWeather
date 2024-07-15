@@ -14,14 +14,10 @@ import retrofit2.create
  */
 object ServiceCreator {
    private  const val  BASE_URI="https://api.caiyunapp.com/"
-
-
     val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URI)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-
     //通过  内联函数  在调用的时候更方便 只用传递 泛型即可
-
     inline  fun<reified  T>create()= retrofit.create(T::class.java)
 }

@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">SunnyWeather</string>
     <string name="fragment_place_hit">请输入地址</string>
+    <string name="infe_index_live">生活</string>
+    <string name="infe_index_ganmao">感冒</string>
+    <string name="infe_index_chuanyi">穿衣</string>
+    <string name="infe_index_ziwaixian">紫外线</string>
+    <string name="infe_index_xiche">洗车</string>
 </resources>

@@ -17,12 +17,17 @@ import kotlin.coroutines.suspendCoroutine
  * @date 2024/7/14
  */
 object SunnyWeatherNetwork {
-    //生成动态代理
-   private  val placeService=ServiceCreator.create<PlaceService>()
-    //因为需要用到 协成所以生成 挂起函数
-    suspend fun  placeServiceawait(string: String) = placeService.searchPlaces(string).await()
+    //生成获取城市接口动态代理
+      val placeService=ServiceCreator.create<PlaceService>()
+    suspend fun  getPlaceService(queue:String) = placeService.searchPlaces(queue)
+      val  weatherService=ServiceCreator.create<WeatherService>()
+    suspend fun getDailyWeather(lat: String,lng: String) = weatherService.getDailyWeather( lat,lng).await()
+
+    suspend fun getRealWeather(lat: String,lng: String) = weatherService.getRealtimeWeather(lat,lng).await()
+
+    //获取某城市实时天气的接口
     ///网络请求之后的请求响应结果
-    suspend fun<T> Call<T>.await():T{
+  private  suspend fun<T> Call<T>.await():T{
         return  suspendCoroutine {
             continuation ->enqueue(object :Callback<T>{
             override fun onResponse(call: Call<T>, response: Response<T>) {
@@ -32,7 +37,7 @@ object SunnyWeatherNetwork {
                 }
             }
             override fun onFailure(call: Call<T>, t: Throwable) {
-                TODO("Not yet implemented")
+                continuation.resumeWithException(t)
             }
         })
         }
