@@ -17,7 +17,5 @@ import retrofit2.http.Query
 interface PlaceService {
     //查询城市信息
    @GET("/v2/place?token=${SunnyWeatherApplication.TOKEN}&lang=zh_CN")
-    //返回的值为 类似  java当中的bean类
-// 这样Retrofit就会将服务器返回的JSON数据自动解析成PlaceResponse对象了。
     fun searchPlaces(@Query("query")query:String) :retrofit2.Call<PlaceBean>
 }

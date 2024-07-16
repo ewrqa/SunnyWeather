@@ -1,5 +1,6 @@
 package com.example.sunnyweather.ui.place
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,13 +20,12 @@ import com.example.sunnyweather.utils.startActivity
  * @author 张凯涛
  * @date 2024/7/15
  */
-class PlaceAdapter(val fragment:Fragment,val list: List<Place> ): RecyclerView.Adapter<PlaceAdapter.ViewHolder>() {
+class PlaceAdapter(val fragment:PlaceFragment,val list: List<Place> ): RecyclerView.Adapter<PlaceAdapter.ViewHolder>() {
     inner  class ViewHolder(view:View):RecyclerView.ViewHolder(view){
      val placeName : TextView = view.findViewById(R.id.placeName)
       val placeAddress:TextView = view.findViewById(R.id.placeAddress)
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-
         //连接 条目布局
         val inflate = LayoutInflater.from(parent.context).
         inflate(R.layout.place_item, parent,false)
@@ -38,11 +38,13 @@ class PlaceAdapter(val fragment:Fragment,val list: List<Place> ): RecyclerView.A
             val lng = place.location.lng
             val lat = place.location.lat
             val name = place.name
+            fragment.viewModel.savePlace(place)
             startActivity<WeahterActivity>(fragment.context!!){
                 putExtra("lng",lng)
                 putExtra("lat",lat)
                 putExtra("name",name)
             }
+            fragment.activity?.finish()
         }
         return ViewHolder(inflate)
     }

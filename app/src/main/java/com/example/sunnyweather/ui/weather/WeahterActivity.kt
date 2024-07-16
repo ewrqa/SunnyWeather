@@ -1,5 +1,6 @@
 package com.example.sunnyweather.ui.weather
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -36,14 +37,20 @@ class WeahterActivity : AppCompatActivity() {
      lateinit var dressingText:TextView
      lateinit var ultravioletText:TextView
      lateinit var carWashingText:TextView
-
      lateinit var weatherLayout: ScrollView
      lateinit var swipeRefresh :SwipeRefreshLayout
      lateinit var  navBtn:Button
-    lateinit var drawerLayout:DrawerLayout
+     lateinit var drawerLayout:DrawerLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //将背景图与  与系统融为一体
+        val decorView = window.decorView
+        //表示activity的不糊会显示在状态栏上面  设置状态栏的颜色为透明色
+        decorView.systemUiVisibility=View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        window.statusBarColor=Color.TRANSPARENT
+        //然后在顶部布局的位置 设置该布局为系统留出空间
+//        android:fitsSystemWindows
         setContentView(R.layout.activity_weahter)
         initview()
         if(viewmode.locationLng.isEmpty()){
@@ -55,10 +62,11 @@ class WeahterActivity : AppCompatActivity() {
         if(viewmode.placeName.isEmpty()){
             viewmode.placeName = intent.getStringExtra("name") ?: ""
         }
-        //发送  详情页数据的请求
+        //发送请求
+        refreshWeather()
         //livedata 观察者
         viewmode.switchMap.observe(this, Observer {
-           result->
+           result->//从  Repository中 emit发送过来的
            val orNull = result.getOrNull()
             if(orNull!=null){
                 shoWeatherInfo(orNull)
@@ -69,8 +77,6 @@ class WeahterActivity : AppCompatActivity() {
             //  得到响应之后将刷新加载的动画 隐藏
             swipeRefresh.isRefreshing=false
         })
-        //设置刷新进度球的颜色
-       refreshWeather()
         //下拉刷新  刷新的响应
         swipeRefresh.setOnRefreshListener {
             refreshWeather()
@@ -80,15 +86,21 @@ class WeahterActivity : AppCompatActivity() {
             //抽屉布局
             drawerLayout.openDrawer(GravityCompat.START)
         }
+        //抽屉布局的额监听
         drawerLayout.addDrawerListener(object :DrawerLayout.DrawerListener{
-            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+            //当抽屉滑动触发时  0到1
+              override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
             }
+            //当抽屉完全打开的时候
             override fun onDrawerOpened(drawerView: View) {
             }
+            //当抽屉关闭之后
             override fun onDrawerClosed(drawerView: View) {
+                //通过获取来隐藏软键盘的触发
                 val manager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 manager.hideSoftInputFromWindow(drawerView.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
             }
+            //当抽屉状态发生变化的时候
             override fun onDrawerStateChanged(newState: Int) {
             }
         })
@@ -96,26 +108,28 @@ class WeahterActivity : AppCompatActivity() {
     //进入页面即刻刷新该页面
     fun refreshWeather() {
         viewmode.getWather(viewmode.locationLng, viewmode.locationLat)
+        //加载动画是否执行
         swipeRefresh.isRefreshing = true
     }
     fun shoWeatherInfo(weather:WeatherBean){
         //城市名字
         placeName.text=viewmode.placeName
-        Log.e("Tag",viewmode.placeName)
         val realtime = weather.realtime
         val daily = weather.daily
+        //填充 now.xml 布局
         val currentTempText = "${realtime.temperature.toInt()} ℃"
         currentTemp.text = currentTempText
         currentSky.text = getSky(realtime.skycon).info
         val currentPM25Text = "空气指数 ${realtime.air_quality.aqi.chn.toInt()}"
         currentAQI.text=currentPM25Text
         nowLayout.setBackgroundResource(getSky(realtime.skycon).bg)
-        forecastLayout.removeAllViews()
-
+        //填充 forecastLayout 布局数据
+//        forecastLayout.removeAllViews()
         val days = daily.skycon.size
         for (i in 0 until days) {
             val skycon = daily.skycon[i]
             val temperature = daily.temperature[i]
+            // 上下文  布局  作用在父容器的位置 是否立刻添加到父容器上
             val view = LayoutInflater.from(this).inflate(R.layout.forecast_item, forecastLayout, false)
             val dateInfo = view.findViewById(R.id.dateInfo) as TextView
             val skyIcon = view.findViewById(R.id.skyIcon) as ImageView
@@ -128,6 +142,7 @@ class WeahterActivity : AppCompatActivity() {
             skyInfo.text = sky.info
             val tempText = "${temperature.min.toInt()} ~ ${temperature.max.toInt()} ℃"
             temperatureInfo.text = tempText
+
             forecastLayout.addView(view)
         }
 //         填充life_index.xml布局中的数据
@@ -137,7 +152,6 @@ class WeahterActivity : AppCompatActivity() {
         ultravioletText.text = lifeIndex.ultraviolet[0].desc
         carWashingText.text = lifeIndex.carWashing[0].desc
         weatherLayout.visibility = View.VISIBLE
-
     }
     fun initview(){
         placeName = findViewById<TextView>(R.id.placeName)

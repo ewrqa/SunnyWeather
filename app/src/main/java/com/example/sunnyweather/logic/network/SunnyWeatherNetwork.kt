@@ -17,9 +17,8 @@ import kotlin.coroutines.suspendCoroutine
  * @date 2024/7/14
  */
 object SunnyWeatherNetwork {
-    //生成获取城市接口动态代理
       val placeService=ServiceCreator.create<PlaceService>()
-    suspend fun  getPlaceService(queue:String) = placeService.searchPlaces(queue)
+    suspend fun  getPlaceService(queue:String) = placeService.searchPlaces(queue).await()
       val  weatherService=ServiceCreator.create<WeatherService>()
     suspend fun getDailyWeather(lat: String,lng: String) = weatherService.getDailyWeather( lat,lng).await()
 
